@@ -1,4 +1,4 @@
-class transcation;
+class transaction;
 
    rand logic wr_en;
    rand logic rd_en;
