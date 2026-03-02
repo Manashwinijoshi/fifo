@@ -22,7 +22,7 @@ class underflow_seq extends base_sequence;
       seq2drv.put(tx);
     end
 
-    // ⭐ Notify sequence completion
+  
     -> seq_done;
 
   endtask
