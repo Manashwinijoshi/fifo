@@ -1,3 +1,4 @@
+`include "test.sv"
 module top;
 
   logic clk;
