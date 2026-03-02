@@ -1,77 +1,76 @@
 class scoreboard;
-
-  mailbox#(transaction) mon2sb;
-
+  mailbox #(transaction) mon2sb;
+  event sb_done;
   transaction mon_tr;
-
   bit [7:0] ref_queue[$];
-
   int pass_count = 0;
   int fail_count = 0;
-
-  parameter FIFO_DEPTH = 8;
-
-  function new(mailbox#(transaction) mon2sb);
+  parameter int FIFO_DEPTH = 32;
+  int count =0;
+  function new(mailbox #(transaction) mon2sb,event sb_done);
     this.mon2sb = mon2sb;
+    this.sb_done = sb_done;
   endfunction
 
   task run();
+    bit [7:0] expected;
     forever begin
-
       mon2sb.get(mon_tr);
 
-      // ---------------- WRITE ----------------
-      if(mon_tr.wr_en) begin
+      // Skip idle cycles where neither wr_en nor rd_en is asserted
+      if (!mon_tr.wr_en && !mon_tr.rd_en) continue;
 
-        if(ref_queue.size() == FIFO_DEPTH) begin
-          if(!mon_tr.full) begin
-            $error("FULL flag mismatch");
-            fail_count++;
-          end
+      // ---------------- WRITE ----------------
+      if (mon_tr.wr_en) begin
+           count++;
+        if (!mon_tr.full) begin
+         
+          ref_queue.push_back(mon_tr.d_in);
+          $display("WRITE PASS  : Data = %0d", mon_tr.d_in);
+          pass_count++;
         end
         else begin
-          if(mon_tr.full) begin
-            $error("FULL flag mismatch");
-            fail_count++;
-          end
-
-          ref_queue.push_back(mon_tr.d_in);
+          $error("WRITE BLOCKED - FIFO FULL");
+          fail_count++;
         end
       end
 
-      if(mon_tr.rd_en) begin
-
-        if(ref_queue.size() == 0) begin
-          if(!mon_tr.empty) begin
+      // ---------------- READ ----------------
+      if (mon_tr.rd_en) begin
+              count++;
+        if (ref_queue.size() == 0) begin
+          if (!mon_tr.empty) begin
             $error("EMPTY flag mismatch");
             fail_count++;
           end
         end
         else begin
-          if(mon_tr.empty) begin
-            $error("EMPTY flag mismatch");
-            fail_count++;
-          end
-
-          bit [7:0] expected = ref_queue.pop_front();
-
-          if(expected !== mon_tr.d_out) begin
+          expected = ref_queue.pop_front();
+        
+          if (expected !== mon_tr.d_out) begin
+            $display("Expected=%0d Got=%0d", expected, mon_tr.d_out);
             $error("DATA MISMATCH");
+          
             fail_count++;
           end
           else begin
+            $display("READ PASS   : Data = %0d", mon_tr.d_out);
             pass_count++;
           end
         end
       end
-
+      if (count == `TX )
+       -> sb_done;
     end
   endtask
 
   function void report();
-    $display("PASS = %0d | FAIL = %0d", pass_count, fail_count);
-    if(fail_count == 0)
-      $display("ALL TESTS PASSED ✓");
+    $display("================================");
+    $display("TOTAL PASS = %0d", pass_count);
+    $display("TOTAL FAIL = %0d", fail_count);
+    if (fail_count == 0)
+      $display("ALL TESTS PASSED");
+    $display("================================");
   endfunction
 
 endclass
