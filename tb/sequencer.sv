@@ -5,10 +5,11 @@ class sequencer;
   event next_tr;
   int finish = 0;
   int N;
-  function new(  mailbox#(transaction) seq2drv, string seq_name, int N);
+  function new(  mailbox#(transaction) seq2drv, string seq_name, int N , event next_tr);
      this.seq_name = seq_name;
      this.seq2drv = seq2drv;
      this.N = N;
+     this.next_tr = next_tr;
   endfunction
 
   task start();
