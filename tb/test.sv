@@ -1,4 +1,3 @@
-`define TX 8
 `include "interface.sv"
 `include "transaction.sv"
 `include "base_sequence.sv"
@@ -11,14 +10,11 @@
 `include "environment.sv"
 
 class test;
-  event done,sb_done;
+  event next_tr;
   environment env;
-  //write_seq seq;
-  underflow_seq seq;
-
+  
   function new(virtual inf vif);
     env = new(vif,sb_done);
-    seq = new(env.seq2drv,done);
   endfunction
 
   task run();
