@@ -7,14 +7,14 @@ logic [7:0]d_out;
 logic full;
 logic empty;
 
-  clocking drv_cb @(posedge clk)
+  clocking drv_cb @(posedge clk);
     default input #1step output #1step;
     output wr_en;
     output rd_en;
     output d_in;
   endclocking
 
-   clocking mon_cb @(posedge clk)
+  clocking mon_cb @(posedge clk);
       default input #1step;
       input wr_en;
       input rd_en;
