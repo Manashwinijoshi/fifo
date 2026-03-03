@@ -21,6 +21,7 @@ class driver;
     seq2drv.get(tx);
     drive();
     -> next_tr;
+    @(vif.drv_cb);
   end
 endtask
 
