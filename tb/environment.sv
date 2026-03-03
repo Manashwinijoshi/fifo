@@ -24,7 +24,7 @@ class environment;
 
   task run();
    fork 
-     sqr.run();
+     sqr.start();
      drv.run();
      mon.run();
      sb.run();
