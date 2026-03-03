@@ -1,15 +1,14 @@
 class scoreboard;
   mailbox #(transaction) mon2sb;
-  event sb_done;
   transaction mon_tr;
+
+  int pass_count = 0, fail_count = 0;
   bit [7:0] ref_queue[$];
-  int pass_count = 0;
-  int fail_count = 0;
+
   parameter int FIFO_DEPTH = 32;
-  int count =0;
-  function new(mailbox #(transaction) mon2sb,event sb_done);
+
+  function new(mailbox #(transaction) mon2sb);
     this.mon2sb = mon2sb;
-    this.sb_done = sb_done;
   endfunction
 
   task run();
@@ -17,16 +16,12 @@ class scoreboard;
     forever begin
       mon2sb.get(mon_tr);
 
-      // Skip idle cycles where neither wr_en nor rd_en is asserted
-      if (!mon_tr.wr_en && !mon_tr.rd_en) continue;
-
-      // ---------------- WRITE ----------------
+          // ---------------- WRITE ----------------
       if (mon_tr.wr_en) begin
-           count++;
-        if (!mon_tr.full) begin
+          if (!mon_tr.full) begin
          
-          ref_queue.push_back(mon_tr.d_in);
-          $display("WRITE PASS  : Data = %0d", mon_tr.d_in);
+                 ref_queue.push_back(mon_tr.d_in);
+                 $display("WRITE PASS  : Data = %0d", mon_tr.d_in);
           pass_count++;
         end
         else begin
@@ -37,8 +32,7 @@ class scoreboard;
 
       // ---------------- READ ----------------
       if (mon_tr.rd_en) begin
-              count++;
-        if (ref_queue.size() == 0) begin
+         if (ref_queue.size() == 0) begin
           if (!mon_tr.empty) begin
             $error("EMPTY flag mismatch");
             fail_count++;
@@ -59,8 +53,6 @@ class scoreboard;
           end
         end
       end
-      if (count == `TX )
-       -> sb_done;
     end
   endtask
 
