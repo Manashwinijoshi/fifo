@@ -22,12 +22,12 @@ fifo_if fifo_if_inst(clk, reset);
   fifo dut (
     .clk   (clk),
     .reset (reset),
-    .wr_en (fifo_if.wr_en),
-    .rd_en (fifo_if.rd_en),
-    .d_in  (fifo_if.d_in),
-    .d_out (fifo_if.d_out),
-    .full  (fifo_if.full),
-    .empty (fifo_if.empty)
+    .wr_en (fifo_if_inst.wr_en),
+    .rd_en (fifo_if_inst.rd_en),
+    .d_in  (fifo_if_inst.d_in),
+    .d_out (fifo_if_inst.d_out),
+    .full  (fifo_if_inst.full),
+    .empty (fifo_if_inst.empty)
   );
 
   // Test
