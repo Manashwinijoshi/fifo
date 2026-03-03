@@ -16,7 +16,7 @@ module top;
   end
 
   // Interface
-  inf fifo_if(clk, reset);
+fifo_if fifo_if_inst(clk, reset);
 
   // DUT
   fifo dut (
@@ -33,7 +33,7 @@ module top;
   // Test
   initial begin
     test t;
-    t = new(fifo_if);
+    t = new(fifo_if_inst);
     t.run();
   end
 
