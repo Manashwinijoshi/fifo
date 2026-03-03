@@ -3,21 +3,24 @@ class driver;
   transaction tx;
   mailbox#(transaction) seq2drv;
   virtual inf vinf;
-
+  event next_tr;
+  
   function new(
     mailbox#(transaction) seq2drv,
-    virtual inf.DRV vinf
+    virtual inf.DRV vinf,
+    event next_tr
   );
     this.seq2drv = seq2drv;
     this.vinf    = vinf;
+    this.next_tr = next_tr;
   endfunction
 
  task run();
-  wait(!vinf.reset);
-
   forever begin
+    wait(!vinf.reset);
     seq2drv.get(tx);
     drive();
+    -> next_tr;
   end
 endtask
 
