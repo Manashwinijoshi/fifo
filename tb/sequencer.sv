@@ -3,10 +3,12 @@ class sequencer;
   
   string seq_name;
   event next_tr;
-  
-  function new(  mailbox#(transaction) seq2drv, string seq_name = "");
+  int finish = 0;
+  int N;
+  function new(  mailbox#(transaction) seq2drv, string seq_name = "", int N);
      this.seq_name = seq_name;
      this.seq2drv = seq2drv;
+     this.N = N;
   endfunction
 
   task start();
@@ -26,7 +28,10 @@ class sequencer;
 
     endcase
 
-    seq.run();
-
+    repeat(N) begin
+      seq.run();
+      @next_tr;
+    end
+    finish = 1;
   endtask
 endclass
