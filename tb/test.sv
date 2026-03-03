@@ -1,4 +1,5 @@
-
+`include "package.sv"
+import pkg::*;
 class test;
   event next_tr;
   environment env;
