@@ -1,12 +1,12 @@
 class monitor;
 
   transaction tx;
-  virtual inf.MON vinf;
+  virtual inf vinf;
   mailbox #(transaction) mon2sb;
   event next_tr;
 
   function new(mailbox #(transaction) mon2sb,
-               virtual inf.MON vinf, event next_tr);
+               virtual inf vinf, event next_tr);
     this.mon2sb = mon2sb;
     this.vinf   = vinf;
     this.next_tr = next_tr;
@@ -14,11 +14,13 @@ class monitor;
 
   task run();
     forever begin
-      @(vinf.mon_cb);
-
+     /* @(posedge vinf.clk);
+      @(negedge vinf.clk);*/
+       @(vinf.mon_cb);
+         
       tx = new();
 
-      // Sample control + input signals immediately
+    
       tx.wr_en = vinf.mon_cb.wr_en;
       tx.rd_en = vinf.mon_cb.rd_en;
       tx.d_in  = vinf.mon_cb.d_in;
@@ -27,6 +29,8 @@ class monitor;
       tx.d_out = vinf.mon_cb.d_out;
 
       mon2sb.put(tx);
+      
+      ->next_tr;
     end
   endtask
 
