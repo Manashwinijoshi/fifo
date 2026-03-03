@@ -5,13 +5,10 @@ class write_seq extends base_sequence;
 
   task run();
       transaction tx;
-    repeat(`TX)
-      begin
-        tx = new();
+         tx = new();
         assert (tx.randomize() with {wr_en == 1; rd_en == 0;}) else
                   $fatal(1, "Randomization failed in write_seq");
         
           seq2drv.put(tx);
-      end
-   endtask
+     endtask
 endclass
