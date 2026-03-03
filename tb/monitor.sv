@@ -3,11 +3,13 @@ class monitor;
   transaction tx;
   virtual inf.MON vinf;
   mailbox #(transaction) mon2sb;
+  event next_tr;
 
   function new(mailbox #(transaction) mon2sb,
-               virtual inf.MON vinf);
+               virtual inf.MON vinf, event next_tr);
     this.mon2sb = mon2sb;
     this.vinf   = vinf;
+    this.next_tr = next_tr;
   endfunction
 
   task run();
