@@ -2,6 +2,7 @@ class sequencer;
   mailbox#(transaction) seq2drv;
   
   string seq_name;
+  event next_tr;
   
   function new(  mailbox#(transaction) seq2drv, string seq_name = "");
      this.seq_name = seq_name;
